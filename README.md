@@ -1,7 +1,8 @@
 # Zika virus in Africa
 
 ## Description
-- The code provided supports the study titled 'Vector competence and biting behaviour shape the present and future of Zika virus transmission patterns in Africa'. This code runs alternative models for predicting R0, based on traits that vary with mosquito ancestry (i.e., genetic population variation) and climate. 
+- The code provided supports the study titled 'Vector competence and biting behaviour shape the present and future of Zika virus transmission patterns in Africa'. This code runs alternative models for predicting R0, based on traits that vary with mosquito ancestry (i.e., genetic population variation) and climate.
+- This project was run using R v4.1.0 and STAN v2.33 (https://mc-stan.org/users/documentation/)
 
 ## Authors
 - Jamie M. Caldwell, Louis Lambrechts, and Noah Rose
