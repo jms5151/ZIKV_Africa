@@ -44,7 +44,7 @@ africaMap <- ggplot(data = africa) +
   ylab('') +
   scale_color_manual(
     values = c('navyblue', 'maroon', 'orange'),
-    labels = c('Not imminent', 'Near-current', 'Future'),
+    labels = c('Not imminent', 'Future', 'Near-current'),
     guide = guide_legend(reverse = TRUE, override.aes=list(lwd = 1.3))
   ) + 
   theme_bw() +
@@ -74,7 +74,7 @@ lollipopPlot <- ggplot(bc3, aes(x = median_value, y = City, pch = as.factor(year
   theme(legend.position = c(.8, .2), legend.background = element_rect(fill='transparent')) + 
   scale_color_manual(
     values = c('navyblue', 'maroon', 'orange'),
-    labels = c('Not imminent', 'Near-current', 'Future'),
+    labels = c('Not imminent', 'Future', 'Near-current'),
     guide = guide_legend(reverse = TRUE, override.aes=list(linetype = 1, shape = NA, lwd = 1.3))
   ) +
   scale_shape_manual(name = 'Time period', 
