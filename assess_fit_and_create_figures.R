@@ -35,7 +35,7 @@ library(viridisLite)
 library(ggpubr)
 
 # open model
-r0_mod <- readRDS('stan_model_fit_zikv.rds')
+r0_mod <- readRDS('../models/stan_model_fit_zikv.rds')
 
 # load data
 load('../VBD-data/model_data_zikv.RData')
@@ -46,7 +46,7 @@ list_of_draws <- rstan::extract(r0_mod)
 
 # call functions
 function_files <- list.files('functions/', full.names = T)
-sapply(function_files, load, .GlobalEnv)
+invisible(sapply(function_files, source, .GlobalEnv))
 
 # Figure 1 in main text and Appendix Figure 1
 source('Figure1_and_Appendix_Fig1.R')

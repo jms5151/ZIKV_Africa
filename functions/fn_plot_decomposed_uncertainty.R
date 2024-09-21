@@ -1,25 +1,16 @@
-decomposeUncertainty <- function(validationName, genQuantName){
-  # get data
-  indexes <- which(mod_data$validationtype == validationName)
-  samps <- list_of_draws[[genQuantName]][, indexes]
+plotUncertaintyDecomposed <- function(df){
+  dodge <- position_dodge(width = 0.8)
   
-  sampMeans <- colMeans(samps, na.rm = T)
-  sampVar <- colVars(samps, na.rm = T)
+  p <- ggplot(df, aes(x = Point_mean, y = City, color = Uncertainty_Type)) +
+    geom_point(size = 3, position = dodge) + 
+    geom_errorbarh(aes(xmin = lower, xmax = upper), height = 0.2, position = dodge) +  # Horizontal error bars with dodge
+    labs(x = "Mean R0", y = "City", title = "Uncertainty decomposition by city") +
+    theme_minimal() +
+    labs(color = "Source of Uncertainty") +
+    scale_color_manual(
+      values = c('Param_uncertainty' = 'darkred', 'Climate_aaa_uncertainty' = 'blue', 'Total_uncertainty' = 'black'),
+      labels = c('Param_uncertainty' = 'Parameter', 'Climate_aaa_uncertainty' = 'Climate & %Aaa', 'Total_uncertainty' = 'Total')
+    )
   
-  x <- as.data.frame(cbind(sampMeans, sampVar)) 
-  x$City <- mod_data$location[mod_data$validationtype == validationName]
-  x$year <- mod_data$year[mod_data$validationtype == validationName]
-  x$model <- mod_data$model[mod_data$validationtype == validationName]
-  
-  x <- subset(x, model != 'WorldClim_Historical')
-  
-  x2 <- x %>%
-    group_by(City) %>%
-    summarise('Point_mean' = mean(sampMeans),
-              'Param_uncertainty' = var(sampMeans),
-              'Climate_aaa_uncertainty' = mean(sampVar))
-  
-  x2$Total_uncertainty <- rowSums(x2[,c('Param_uncertainty', 'Climate_aaa_uncertainty')])
-  
-  return(x2)  
+  return(p)  
 }

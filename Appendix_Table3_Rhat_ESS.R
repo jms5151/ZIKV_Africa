@@ -5,7 +5,7 @@ fit_summary <- summary(r0_mod)
 
 # Extract the summary statistics
 summary_stats <- fit_summary$summary
-summary_stats <- summary_stats[1:28, ]
+summary_stats <- summary_stats[1:27, ]
 
 # Extract Rhat and ESS
 rhat <- round(summary_stats[, "Rhat"], 2)

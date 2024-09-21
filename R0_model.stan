@@ -14,7 +14,7 @@ data {
   int b_climate_N;                                              // number of observations
   vector[b_climate_N] b_climate_temp;                           // vector of temperatures
   vector[b_climate_N] b_climate;                                // vector of trait b
-  
+
   // EIR (extrinsic incubation rate)
   int EIR_climate_N;                                            // number of observations
   vector[EIR_climate_N] EIR_climate_temp;                       // vector of temperatures
@@ -24,7 +24,7 @@ data {
   int lf_climate_N;                                             // number of observations
   vector[lf_climate_N] lf_climate_temp;                         // vector of temperatures
   vector[lf_climate_N] lf_climate;                              // vector of trait lf
-  
+
   // pMI ancestry (prob mosquito infection)
   int pMI_ancestry_N;                                           // number of observations
   vector[pMI_ancestry_N] pMI_ancestry;                          // vector of prob. mosquito infectiousness | ancestry
@@ -42,7 +42,7 @@ data {
 }
 
 parameters {
-  
+
   // omega (probability of biting a human given a bite)
   real<lower=0> omega_ancestry_constant;                        // parameter c, lower limit
   real<lower=0> omega_ancestry_d;                               // parameter d, upper limit
@@ -58,7 +58,6 @@ parameters {
   // b (prob mosquito infectiousness)
   real<lower=0, upper=0.01> b_climate_constant;                 // parameter c
   real<lower=0, upper=24> b_climate_Tmin;                       // parameter Tmin
-  real<lower=24, upper=45> b_climate_Tmax;                      // parameter Tmax
   real<lower=0> b_climate_sigma;                                // noise
 
   // EIR (extrinsic incubation rate)
@@ -89,26 +88,26 @@ parameters {
 model {                                                         // Fit models to observed data
   // Briere equation: c*x*(x-Tmin)*sqrt(Tmax-x)
   // Guassian equation: rmax*exp(-0.5*(abs(x-Topt)/a)^2)
-  // Michaelis Menten equation: c+(d-c)/1+(e/x)
+  // Michaelis Menten equation: c+(d-c)/(1+(e/x))
   
   // omega (probability of biting a human given a bite)
-  omega_ancestry_constant ~ normal(0.5,1);                       // prior for c
-  omega_ancestry_d ~ normal(0.5,1);                              // prior for d
-  omega_ancestry_e ~ normal(0.5,1);                              // prior for e
-  omega_ancestry_sigma ~ normal(0.01,0.1);                       // prior for sigma
+  omega_ancestry_constant ~ normal(0.15,0.1);                       // prior for c
+  omega_ancestry_d ~ normal(1.5,1);                              // prior for d
+  omega_ancestry_e ~ normal(0.5,0.1);                              // prior for e
+  omega_ancestry_sigma ~ normal(0.01,0.01);                       // prior for sigma
 
   for(h in 1:omega_ancestry_N){
     real omega_ancestry_mu = omega_ancestry_constant + ((omega_ancestry_d - omega_ancestry_constant)/(1 + (omega_ancestry_e / omega_ancestry_aa[h])));
     omega_ancestry[h] ~ normal(omega_ancestry_mu, omega_ancestry_sigma);
   }
-  
+
   // alpha (biting rate)
-  alpha_climate_constant ~ normal(2.02E-04,1);                  // prior for c
+  alpha_climate_constant ~ normal(2.02e-4, 0.01);                  // prior for c
   alpha_climate_Tmin ~ normal(13.35,1);                         // prior for Tmin
-  alpha_climate_Tmax ~ normal(40.08,1);                         // prior for Tmax
+  alpha_climate_Tmax ~ normal(40.08,0.01);                         // prior for Tmax
   alpha_climate_sigma ~ normal(0.01,0.1);                       // prior for sigma
 
-  for(i in 1:alpha_climate_N){                            
+  for(i in 1:alpha_climate_N){
     real alpha_climate_mu = alpha_climate_constant * alpha_climate_temp[i] * (alpha_climate_temp[i] - alpha_climate_Tmin) * sqrt(alpha_climate_Tmax - alpha_climate_temp[i]);
     alpha_climate[i] ~ normal(alpha_climate_mu, alpha_climate_sigma);
   }
@@ -117,26 +116,22 @@ model {                                                         // Fit models to
   }
 
   // b (prob mosquito infectiousness)
-  b_climate_constant ~ normal(8.49E-04,1);                      // prior for c
-  b_climate_Tmin ~ normal(17.05,1);                             // prior for Tmin
-  b_climate_Tmax ~ normal(35.83,1);                             // prior for Tmax
+  b_climate_constant ~ normal(5.5E-04,0.1);                      // prior for c
+  b_climate_Tmin ~ normal(12,2);                             // prior for Tmin
   b_climate_sigma ~ normal(0.01,0.1);                           // prior for sigma
 
-  for(j in 1:b_climate_N){                          
-    real b_climate_mu = b_climate_constant * b_climate_temp[j] * (b_climate_temp[j] - b_climate_Tmin) * sqrt(b_climate_Tmax - b_climate_temp[j]);
+  for(j in 1:b_climate_N){
+    real b_climate_mu = b_climate_constant * b_climate_temp[j] * (b_climate_temp[j] - b_climate_Tmin) * sqrt(38 - b_climate_temp[j]);
     b_climate[j] ~ normal(b_climate_mu, b_climate_sigma);
-  }
-  if (b_climate_Tmin > b_climate_Tmax) {
-    target += positive_infinity();
   }
 
   // EIR (extrinsic incubation rate)
-  EIR_climate_constant ~ normal(6.65E-05,1);                    // prior for c
+  EIR_climate_constant ~ normal(6.65E-05,0.1);                    // prior for c
   EIR_climate_Tmin ~ normal(10.68,1);                           // prior for Tmin
   EIR_climate_Tmax ~ normal(45.90,1);                           // prior for Tmax
   EIR_climate_sigma ~ normal(0.01,0.1);                         // prior for sigma
 
-  for(l in 1:EIR_climate_N){                        
+  for(l in 1:EIR_climate_N){
     real EIR_climate_mu = EIR_climate_constant * EIR_climate_temp[l] * (EIR_climate_temp[l] - EIR_climate_Tmin) * sqrt(EIR_climate_Tmax - EIR_climate_temp[l]);
     EIR_climate[l] ~ normal(EIR_climate_mu, EIR_climate_sigma);
   }
@@ -145,7 +140,7 @@ model {                                                         // Fit models to
   }
 
   // lifespan (1/mosquito mortality rate)
-  lf_climate_constant ~ normal(-1.48E-01,1);                    // prior for c
+  lf_climate_constant ~ normal(-1.48E-01,0.1);                    // prior for c
   lf_climate_Tmin ~ normal(9.16,1);                             // prior for Tmin
   lf_climate_Tmax ~ normal(37.73,1);                            // prior for Tmax
   lf_climate_sigma ~ normal(0.01,0.1);                          // prior for sigma
@@ -157,12 +152,12 @@ model {                                                         // Fit models to
   if (lf_climate_Tmin > lf_climate_Tmax) {
     target += positive_infinity();
   }
-  
+
   // pMI ancestry (prob mosquito infection)
-  pMI_ancestry_constant ~ normal(0.5,1);                         // prior for c
-  pMI_ancestry_d ~ normal(0.5,1);                                // prior for d
-  pMI_ancestry_e ~ normal(0.5,1);                                // prior for e
-  pMI_ancestry_sigma ~ normal(0.01,0.1);                         // prior for sigma
+  pMI_ancestry_constant ~ normal(0.15,0.1);                         // prior for c
+  pMI_ancestry_d ~ normal(0.5,0.1);                                // prior for d
+  pMI_ancestry_e ~ normal(0.5,0.1);                                // prior for e
+  pMI_ancestry_sigma ~ normal(0.01,0.01);                         // prior for sigma
 
   for(kk in 1:pMI_ancestry_N){
     real pMI_ancestry_mu = pMI_ancestry_constant + ((pMI_ancestry_d - pMI_ancestry_constant)/(1 + (pMI_ancestry_e / pMI_ancestry_aa[kk])));
@@ -170,12 +165,12 @@ model {                                                         // Fit models to
   }
 
   // pMI climate (prob mosquito infection)
-  pMI_climate_rmax ~ normal(0.24, 1);                            // prior for rmax
+  pMI_climate_rmax ~ normal(0.24, 0.1);                            // prior for rmax
   pMI_climate_Topt ~ normal(30.08, 1);                           // prior for Topt
   pMI_climate_a ~ normal(3.60, 1);                               // prior for a
   pMI_climate_sigma ~ normal(0.01,0.1);                          // prior for sigma
 
-  for(k in 1:pMI_climate_N){                        
+  for(k in 1:pMI_climate_N){
     real pMI_climate_mu = pMI_climate_rmax * exp(-0.5 * (fabs(pMI_climate_temp[k] - pMI_climate_Topt)/pMI_climate_a)^2);
     pMI_climate[k] ~ normal(pMI_climate_mu, pMI_climate_sigma);
   }
@@ -183,10 +178,10 @@ model {                                                         // Fit models to
 }
 
 generated quantities {
-  
+
   // parameters for posterior predictive checks
   real omega_ancestry_ppc[omega_ancestry_N];                      // omega (prob biting human)
-  real alpha_climate_ppc[alpha_climate_N];                        // alpha (biting rate)        
+  real alpha_climate_ppc[alpha_climate_N];                        // alpha (biting rate)
   real b_climate_ppc[b_climate_N];                                // b (prob mosquito infectiousness)
   real EIR_climate_ppc[EIR_climate_N];                            // EIR (extrinsic incubation rate)
   real lf_climate_ppc[lf_climate_N];                              // lifespan (1/mosquito mortality rate)
@@ -224,19 +219,19 @@ generated quantities {
   }
 
   // ppc alpha (biting rate)
-  for (p in 1:alpha_climate_N){                         
+  for (p in 1:alpha_climate_N){
     real alpha_climate_mu_ppc = alpha_climate_constant * alpha_climate_temp[p] * (alpha_climate_temp[p] - alpha_climate_Tmin) * sqrt(alpha_climate_Tmax - alpha_climate_temp[p]);
     alpha_climate_ppc[p] = normal_rng(alpha_climate_mu_ppc, alpha_climate_sigma);
   }
 
   // ppc b (prob mosquito infectiousness)
   for (q in 1:b_climate_N){
-    real b_climate_mu_ppc = b_climate_constant * b_climate_temp[q] * (b_climate_temp[q] - b_climate_Tmin) * sqrt(b_climate_Tmax - b_climate_temp[q]);
+    real b_climate_mu_ppc = b_climate_constant * b_climate_temp[q] * (b_climate_temp[q] - b_climate_Tmin) * sqrt(38 - b_climate_temp[q]);
     b_climate_ppc[q] = normal_rng(b_climate_mu_ppc, b_climate_sigma);
   }
 
   // ppc EIR (extrinsic incubation rate)
-  for (s in 1:EIR_climate_N){                       
+  for (s in 1:EIR_climate_N){
     real EIR_climate_mu_ppc = EIR_climate_constant * EIR_climate_temp[s] * (EIR_climate_temp[s] - EIR_climate_Tmin) * sqrt(EIR_climate_Tmax - EIR_climate_temp[s]);
     EIR_climate_ppc[s] = normal_rng(EIR_climate_mu_ppc, EIR_climate_sigma);
   }
@@ -274,8 +269,8 @@ generated quantities {
     }
 
     // b (prob mosquito infectiousness)
-    if(b_climate_Tmin < temp_new[zz] && b_climate_Tmax > temp_new[zz]){
-      b_climate_new[zz] = normal_rng((b_climate_constant * temp_new[zz] * (temp_new[zz] - b_climate_Tmin) * sqrt(b_climate_Tmax - temp_new[zz])), b_climate_sigma);
+    if(b_climate_Tmin < temp_new[zz] && 38 > temp_new[zz]){
+      b_climate_new[zz] = normal_rng((b_climate_constant * temp_new[zz] * (temp_new[zz] - b_climate_Tmin) * sqrt(38 - temp_new[zz])), b_climate_sigma);
     }
     else {
       b_climate_new[zz] = 0;
@@ -305,7 +300,6 @@ generated quantities {
 
     NmNh_new[zz] = normal_rng(2,0.5);
     mu_h_new[zz] = normal_rng(4.25E-05, 0.00005);
-    // delta[zz] = 1/weibull_rng(2.69, 6.70);           //zikv from https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5403043/
     delta_new[zz] = 1/gamma_rng(5.9, 0.5);                  //zikv from https://journals.plos.org/plosntds/article?id=10.1371/journal.pntd.0004726
     gamma_new[zz] = 1/gamma_rng(5.0, 0.5);
 
@@ -317,23 +311,42 @@ generated quantities {
     pMI_new[zz] = normal_rng(0.24, 0.05);
 
     // R0 climate
-    R0_climate_new[zz] = sqrt(
+    real temp_R0_climate = sqrt(
       (alpha_climate_new[zz] * b_climate_new[zz] *
       (EIR_climate_new[zz] / ((1/lf_climate_new[zz]) * ((1/lf_climate_new[zz]) + EIR_climate_new[zz])))) *
       (alpha_climate_new[zz] * pMI_climate_new[zz] * NmNh_new[zz] * (delta_new[zz] / ((delta_new[zz] + mu_h_new[zz]) *
       (gamma_new[zz] + mu_h_new[zz])))));
 
+    // Check if temp_R0 is NaN, and if so, set R0_climate_new[zz] to 0
+    if (is_nan(temp_R0_climate)) {
+      R0_climate_new[zz] = 0;
+    } else {
+      R0_climate_new[zz] = temp_R0_climate;
+    }
+
     // R0 ancestry (omega and pMI)
-    R0_ancestry_new[zz] = sqrt(
+    real temp_R0_ancestry = sqrt(
       (omega_ancestry_new[zz] * alpha_new[zz] * b_new[zz] * (EIR_new[zz] / ((1/lf_new[zz]) * ((1/lf_new[zz]) + EIR_new[zz])))) *
       (alpha_new[zz] * pMI_ancestry_new[zz] * NmNh_new[zz] * (delta_new[zz] / ((delta_new[zz] + mu_h_new[zz]) * (gamma_new[zz] + mu_h_new[zz]))))
       );
 
+    if (is_nan(temp_R0_ancestry)) {
+      R0_ancestry_new[zz] = 0;
+    } else {
+      R0_ancestry_new[zz] = temp_R0_ancestry;
+    }
+
     // R0 climate + ancestry (pMI ancestry)
-    R0_full_new[zz] = sqrt((omega_ancestry_new[zz] * alpha_climate_new[zz] * b_climate_new[zz] *
+    real temp_R0_full = sqrt((omega_ancestry_new[zz] * alpha_climate_new[zz] * b_climate_new[zz] *
     (EIR_climate_new[zz] / ((1/lf_climate_new[zz]) * ((1/lf_climate_new[zz]) + EIR_climate_new[zz])))) *
     (alpha_climate_new[zz] * pMI_ancestry_new[zz] * NmNh_new[zz] * (delta_new[zz] / ((delta_new[zz] + mu_h_new[zz]) *
     (gamma_new[zz] + mu_h_new[zz])))));
+
+    if (is_nan(temp_R0_full)) {
+      R0_full_new[zz] = 0;
+    } else {
+      R0_full_new[zz] = temp_R0_full;
+    }
 
   }
 

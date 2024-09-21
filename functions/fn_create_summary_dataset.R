@@ -1,6 +1,6 @@
 create_summary_dataset <- function(val_type){
   # format names
-  sero_full <- concatSamples(validationName = 'seroprevalence', genQuantName = val_type, percentiles = 95)
+  sero_full <- concatAncestrySamples(validationName = 'seroprevalence', genQuantName = val_type, percentiles = 95)
   sero_full$Country <- sero_df$Country
   sero_full$Seroprevalence <- sero_df$Seroprevalence
   sero_full$NeutAnti <- sero_df$Neutralizing_antibodies
