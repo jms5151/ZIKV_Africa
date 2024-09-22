@@ -5,11 +5,15 @@
 # pullSamples from functions/fn_pull_samples.R
 # r0_plot from functions/fn_plot_r0.R
 
+# data
+sero_df <- read.csv('seroSites_Aaa_v2.csv')
+
 anc_r0_plot <- r0_plot(validationName = 'ancestry', genQuantName = 'R0_ancestry_new') + ylim(0,6)
 temp_r0_plot <- r0_plot(validationName = 'temperature', genQuantName = 'R0_climate_new') + ylim(0,6)
 
-contour_samps <- concatSamples(validationName = 'contour', genQuantName = 'R0_full_new', percentiles = 50)
+contour_samps <- concatAncestrySamples(validationName = 'contour', genQuantName = 'R0_full_new', percentiles = 50)
 
+# plot
 contourPlot <- ggplot(contour_samps, aes(temp, anc*100, z=median)) +
   geom_contour_filled(breaks = c(0, 0.5, 0.9, 1, 1.1, 1.5, 2, 3, 4)) + #seq(from = 0, to = 5, by = 0.5)
   guides(fill=guide_legend(expression(R[0]))) +
