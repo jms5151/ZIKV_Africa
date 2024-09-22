@@ -14,7 +14,7 @@ validation_plot <- function(df){
     geom_vline(xintercept = 1, linetype = 'dashed', linewidth = 0.75) +
     theme(legend.position = 'bottom') +
     stat_ellipse(level = 0.95, col = 'darkgrey', linetype = 'dashed') +
-    ylim(0,30)
+    coord_cartesian(ylim = c(0, 30))
 
   return(p)
   
