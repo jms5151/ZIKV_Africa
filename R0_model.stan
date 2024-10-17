@@ -45,7 +45,7 @@ parameters {
 
   // omega (probability of biting a human given a bite)
   real<lower=0> omega_ancestry_constant;                        // parameter c, lower limit
-  real<lower=0> omega_ancestry_d;                               // parameter d, upper limit
+  real<lower=0, upper=1> omega_ancestry_d;                      // parameter d, upper limit
   real<lower=0> omega_ancestry_e;                               // parameter e, dose responding to halfway between c and d
   real<lower=0> omega_ancestry_sigma;                           // noise
 
@@ -91,10 +91,10 @@ model {                                                         // Fit models to
   // Michaelis Menten equation: c+(d-c)/(1+(e/x))
   
   // omega (probability of biting a human given a bite)
-  omega_ancestry_constant ~ normal(0.15,0.1);                       // prior for c
+  omega_ancestry_constant ~ normal(0.15,0.1);                    // prior for c
   omega_ancestry_d ~ normal(1.5,1);                              // prior for d
-  omega_ancestry_e ~ normal(0.5,0.1);                              // prior for e
-  omega_ancestry_sigma ~ normal(0.01,0.01);                       // prior for sigma
+  omega_ancestry_e ~ normal(0.5,0.1);                            // prior for e
+  omega_ancestry_sigma ~ normal(0.01,0.01);                      // prior for sigma
 
   for(h in 1:omega_ancestry_N){
     real omega_ancestry_mu = omega_ancestry_constant + ((omega_ancestry_d - omega_ancestry_constant)/(1 + (omega_ancestry_e / omega_ancestry_aa[h])));
@@ -102,9 +102,9 @@ model {                                                         // Fit models to
   }
 
   // alpha (biting rate)
-  alpha_climate_constant ~ normal(2.02e-4, 0.01);                  // prior for c
+  alpha_climate_constant ~ normal(2.02e-4, 0.01);               // prior for c
   alpha_climate_Tmin ~ normal(13.35,1);                         // prior for Tmin
-  alpha_climate_Tmax ~ normal(40.08,0.01);                         // prior for Tmax
+  alpha_climate_Tmax ~ normal(40.08,0.01);                      // prior for Tmax
   alpha_climate_sigma ~ normal(0.01,0.1);                       // prior for sigma
 
   for(i in 1:alpha_climate_N){
@@ -116,9 +116,9 @@ model {                                                         // Fit models to
   }
 
   // b (prob mosquito infectiousness)
-  b_climate_constant ~ normal(5.5E-04,0.1);                      // prior for c
-  b_climate_Tmin ~ normal(12,2);                             // prior for Tmin
-  b_climate_sigma ~ normal(0.01,0.1);                           // prior for sigma
+  b_climate_constant ~ normal(5.5E-04,0.1);                    // prior for c
+  b_climate_Tmin ~ normal(12,2);                               // prior for Tmin
+  b_climate_sigma ~ normal(0.01,0.1);                          // prior for sigma
 
   for(j in 1:b_climate_N){
     real b_climate_mu = b_climate_constant * b_climate_temp[j] * (b_climate_temp[j] - b_climate_Tmin) * sqrt(38 - b_climate_temp[j]);
@@ -126,7 +126,7 @@ model {                                                         // Fit models to
   }
 
   // EIR (extrinsic incubation rate)
-  EIR_climate_constant ~ normal(6.65E-05,0.1);                    // prior for c
+  EIR_climate_constant ~ normal(6.65E-05,0.1);                  // prior for c
   EIR_climate_Tmin ~ normal(10.68,1);                           // prior for Tmin
   EIR_climate_Tmax ~ normal(45.90,1);                           // prior for Tmax
   EIR_climate_sigma ~ normal(0.01,0.1);                         // prior for sigma
@@ -140,7 +140,7 @@ model {                                                         // Fit models to
   }
 
   // lifespan (1/mosquito mortality rate)
-  lf_climate_constant ~ normal(-1.48E-01,0.1);                    // prior for c
+  lf_climate_constant ~ normal(-1.48E-01,0.1);                  // prior for c
   lf_climate_Tmin ~ normal(9.16,1);                             // prior for Tmin
   lf_climate_Tmax ~ normal(37.73,1);                            // prior for Tmax
   lf_climate_sigma ~ normal(0.01,0.1);                          // prior for sigma
@@ -154,9 +154,9 @@ model {                                                         // Fit models to
   }
 
   // pMI ancestry (prob mosquito infection)
-  pMI_ancestry_constant ~ normal(0.15,0.1);                         // prior for c
-  pMI_ancestry_d ~ normal(0.5,0.1);                                // prior for d
-  pMI_ancestry_e ~ normal(0.5,0.1);                                // prior for e
+  pMI_ancestry_constant ~ normal(0.15,0.1);                       // prior for c
+  pMI_ancestry_d ~ normal(0.5,0.1);                               // prior for d
+  pMI_ancestry_e ~ normal(0.5,0.1);                               // prior for e
   pMI_ancestry_sigma ~ normal(0.01,0.01);                         // prior for sigma
 
   for(kk in 1:pMI_ancestry_N){
@@ -165,7 +165,7 @@ model {                                                         // Fit models to
   }
 
   // pMI climate (prob mosquito infection)
-  pMI_climate_rmax ~ normal(0.24, 0.1);                            // prior for rmax
+  pMI_climate_rmax ~ normal(0.24, 0.1);                          // prior for rmax
   pMI_climate_Topt ~ normal(30.08, 1);                           // prior for Topt
   pMI_climate_a ~ normal(3.60, 1);                               // prior for a
   pMI_climate_sigma ~ normal(0.01,0.1);                          // prior for sigma
