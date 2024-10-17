@@ -45,7 +45,7 @@ parameters {
 
   // omega (probability of biting a human given a bite)
   real<lower=0> omega_ancestry_constant;                        // parameter c, lower limit
-  real<lower=0, upper=1> omega_ancestry_d;                      // parameter d, upper limit
+  real<lower=0> omega_ancestry_d;                               // parameter d, upper limit
   real<lower=0> omega_ancestry_e;                               // parameter e, dose responding to halfway between c and d
   real<lower=0> omega_ancestry_sigma;                           // noise
 

@@ -16,4 +16,4 @@ stan_model_fit_zikv <-
 
 # save stanfit object
 # this is not stored on github because the model object is too large
-saveRDS(stan_model_fit_zikv,'stan_model_fit_zikv_new.rds')
+saveRDS(stan_model_fit_zikv,'stan_model_fit_zikv.rds')

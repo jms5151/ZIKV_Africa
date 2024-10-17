@@ -64,7 +64,7 @@ source('Appendix_Table2_hyperparameter_distributions.R')
 source('Appendix_Table3_Rhat_ESS.R') 
 
 # Appendix Figure 2: Prior vs posterior hyperparameter distributions
-source('Appendix_Fig2_prior_v_poster.R')
+source('Appendix_Fig2_prior_v_posterior.R')
 
 # Appendix Figure 3: Trace plots
 source('Appendix_Fig3_trace_plots.R')
