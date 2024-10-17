@@ -4,7 +4,7 @@ plotUncertaintyDecomposed <- function(df){
   p <- ggplot(df, aes(x = Point_mean, y = City, color = Uncertainty_Type)) +
     geom_point(size = 3, position = dodge) + 
     geom_errorbarh(aes(xmin = lower, xmax = upper), height = 0.2, position = dodge) +  # Horizontal error bars with dodge
-    labs(x = "Mean R0", y = "City", title = "Uncertainty decomposition by city") +
+    labs(x = expression(paste('Mean ', R[0])), y = "City", title = "Uncertainty decomposition by city") +
     theme_minimal() +
     labs(color = "Source of Uncertainty") +
     scale_color_manual(
