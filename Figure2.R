@@ -15,7 +15,7 @@ contour_samps <- concatAncestrySamples(validationName = 'contour', genQuantName 
 
 # plot
 contourPlot <- ggplot(contour_samps, aes(temp, anc*100, z=median)) +
-  geom_contour_filled(breaks = c(0, 0.5, 0.9, 1, 1.1, 1.5, 2, 3, 4)) + #seq(from = 0, to = 5, by = 0.5)
+  geom_contour_filled(breaks = c(0, 0.5, 0.9, 1, 1.1, 1.5, 2, 3, 4), colour = 'white') + #seq(from = 0, to = 5, by = 0.5)
   guides(fill=guide_legend(expression(R[0]))) +
   metR::geom_text_contour(aes(z = median),  col = 'white', size = 5) +
   theme(panel.grid=element_blank(), text=element_text(size=15)) +  # delete grid lines
