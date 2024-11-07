@@ -9,7 +9,7 @@ r0_plot <- function(validationName, genQuantName) {
     pointDataXColName <- gsub('_new', '_temp', genQuantName)
   } else if(grepl('ancestry', genQuantName) == TRUE){
     xvals <- mod_data$aa_new[indexes] * 100
-    xLabel <- 'Human specialist ancestry\n(%Aaa)'
+    xLabel <- expression('Human specialist ancestry (%' *italic(Aaa) *')')
     pointDataXColName <- gsub('_new', '_aa', genQuantName)
   }
   p <- ggplot() +
@@ -17,9 +17,10 @@ r0_plot <- function(validationName, genQuantName) {
     geom_line(aes(xvals, x[,1]), col = 'red', linetype = 'dashed') +
     geom_line(aes(xvals, x[,3]), col = 'red', linetype = 'dashed') +
     theme_classic() +
-    theme(text = element_text(size = 16)) +
+    theme(text = element_text(size = 12)) +
     ylab(expression(R[0])) +
     xlab(xLabel)
   
   return(p)
 }
+
